@@ -94,12 +94,17 @@ int calculateParen(char *s, int len) {
             // add up all the digits on the top of the stack
             // and stop when an OpenParen is reached.
             int temp = 0;
+            // goneThruLoop is needed as the value of temp needs to be
+            // changed if any value was added to temp in the while loop below.
+            bool goneThruLoop = false;
             while(!IsEmpty(&stack) && !OpenParen(Peek(&stack))) {
                 temp += Peek(&stack);
                 Pop(&stack);
+                if (!goneThruLoop) goneThruLoop = true;
             }
-            // temp needs to be changed to 1 if no digits were found.
-            if (temp == 0) temp = 1;
+            // temp needs to be changed to 1 if nothing has been added to the 
+            // value of temp.
+            if (!goneThruLoop) temp = 1;
             // peek the stack,
             // if the open and close parens don't match, return 0,
             // pop the stack

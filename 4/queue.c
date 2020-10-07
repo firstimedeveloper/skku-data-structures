@@ -38,10 +38,10 @@ void InitQueue(Queue *q) {
     q->rear = 0;
 }
 bool IsFull(Queue *q) {
-    return q->rear == MAX;
+    return q->front == (q->rear + 1) & MAX;
 }
 bool IsEmpty(Queue *q) {
-    return q->rear == 0 && q->front == 0;
+    return q->rear == q->front;
 }
 Data Peek(Queue *q) {
     return q->items[q->front];

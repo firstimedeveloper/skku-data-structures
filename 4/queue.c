@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#define MAX 5
+#define MAX 10000
 
 typedef enum {false, true} bool;
 typedef int Data;
@@ -38,7 +38,7 @@ void InitQueue(Queue *q) {
     q->rear = 0;
 }
 bool IsFull(Queue *q) {
-    return q->front == (q->rear + 1) & MAX;
+    return q->front == (q->rear + 1) % MAX;
 }
 bool IsEmpty(Queue *q) {
     return q->rear == q->front;

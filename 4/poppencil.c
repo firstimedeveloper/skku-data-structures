@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#define MAX 10
+#define MAX 10000
 
 typedef enum {false, true} bool;
 typedef int Data;

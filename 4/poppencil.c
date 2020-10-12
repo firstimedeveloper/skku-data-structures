@@ -19,7 +19,8 @@ bool Dequeue(Queue *q);
 bool Enqueue(Queue *q, int item);
 int Peek(Queue *q);
 
-void ProcessQuery(Queue *q, char *str, int max);
+bool IsLastItem(Queue *q);
+void ProcessQuery(Queue *q, char *str, char *targetStr, int max, int *len);
 
 int main() {
     Queue q;
@@ -27,35 +28,60 @@ int main() {
 
     int num, maxLen;
     num = 5; maxLen = 3;
-    char str[MAX];
+    char str[MAX], targetStr[MAX];
     // char str[MAX] = "abc";
     char query[5];
 
     scanf("%d %d\n%s", &num, &maxLen, str);
 
-    for(int i=0; i<strlen(str); i++) {
+    int len = strlen(str);
+    for(int i=0; i<len; i++) {
         Enqueue(&q, str[i]);
     }
-    for (int i=0; i<num; i++) {
+    for (int i=0; i<num+1; i++) {
         fgets(query, 5, stdin);
-        ProcessQuery(&q, query, maxLen);
+        ProcessQuery(&q, query, targetStr, maxLen, &len);
+    }
+
+    for (int i=0; i<strlen(targetStr); i++) {
+        printf("%c\n", targetStr[i]);
     }
     return 0;
 }
 
-void ProcessQuery(Queue *q, char *str, int max) {
+bool IsLastItem(Queue *q) {
+    if (q->front == q->rear-1) {
+        return true;
+    } else return false;
+}
+
+void ProcessQuery(Queue *q, char *str, char *targetStr, int max, int *len) {
     int num;
     char let;
-    for (int i=0; i<5; i++) {
-        if (str[i] == ' ')
-            continue;
-        else if (str[i] == '0') {
-            printf("%d", Peek(q));
-        } else if (str[i] == '1') {
-            if ()
-            Dequeue(&q);
-        } else if (str[i] == '2') {
-            
+
+    // count is the value of successful reads
+    // ie, if no letter was provided, the value would be 1.
+    // if a number and letter was provided, the value would be 2.
+    int count = sscanf(str, "%d %c", &num, &let);
+    if (count == 1) {
+        if (num == 0) {
+           let = (char) Peek(q);
+            strncat(targetStr, &let, MAX);
+            return; 
+        } else if (num == 1) {
+            if (!IsLastItem(q)) { 
+                Dequeue(q);
+                --*len;
+            }
+            return;
+        }
+    } else if (count == 2) {
+        if (num == 2) {
+            if (*len != max) {
+                Enqueue(q, let);
+                ++*len;
+            }
+            return;
         }
     }
 }
@@ -71,6 +97,7 @@ bool IsFull(Queue *q) {
 bool IsEmpty(Queue *q) {
     return q->rear == q->front;
 }
+
 bool Dequeue(Queue *q) {
     if (IsEmpty(q)) return false;
     q->front = (q->front + 1) % MAX;

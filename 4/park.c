@@ -53,7 +53,13 @@ int main() {
 void handleTeams(Queue *q, int team, int currentTime, int *total) {
     Team t;
     t = Peek(q);
-    if (t.time == currentTime ) {
+    // checking if team at the front of the queue == current time
+    // this works because t.time = entrance time + maxTime.
+    // so t.time will only equal currentTime if amount equal to (maxTime) has passed. 
+    // Realistically, I wouldn't need to check t.ok,
+    // but since there is a (slim) chance that an uninitialized t.time == currentTime,
+    // this would be safer.
+    if ((t.time == currentTime) && t.ok != false) {
         Dequeue(q);
         *total -= t.size;
     }
@@ -64,6 +70,7 @@ void handleTeams(Queue *q, int team, int currentTime, int *total) {
     } else {
         t.size = team;
         t.time = currentTime + maxTime;
+        t.ok = true;
         Enqueue(q, t);
         *total += team;
         printf("1 ");

@@ -116,9 +116,8 @@ int main() {
         fgets(line, 8, stdin);
         int ret = sscanf(line, "%s %c\n", op, &let);
         if (strcmp(op, "erase") == 0) {
-            if (cursor != 0 || l.len == 0) {
+            if (cursor != 0 && l.len != 0) {
                 RemovePos(&l, --cursor);
-                cursor++;
             }
         }
         if (ret == 2) {
@@ -127,15 +126,18 @@ int main() {
                     let = ' ';
                 InsertPos(&l, cursor, let);
                 cursor++;
-            } else if (strcmp(op, "move") == 0) {
-                if (let == 'l')
+            } else if (strcmp(op, "move") == 0 && l.len > 0) {
+                if (let == 'l') {
                     if (l.len - cursor < l.len) 
                         cursor--;
-                else if (let == 'r')
-                    if (l.len - cursor > 0)
+                } else if (let == 'r') {
+                    if (l.len > cursor)
                         cursor++;
+                }
             }
         }
+        // PrintAll(&l);
+        // printf("% d\n%d\n", cursor, l.len);
             
     }
     PrintAll(&l);

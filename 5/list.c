@@ -53,7 +53,7 @@ bool RemovePos(Link *l, int pos) {
         current = current->next;
     }
     temp = current->next; 
-    current->next = current->next->next;
+    current->next = temp->next;
     l->len--;
     free(temp);
     return true;
@@ -85,7 +85,9 @@ int main() {
         fgets(line, 8, stdin);
         int ret = sscanf(line, "%s %c\n", op, &let);
         if (strcmp(op, "erase") == 0) {
-            RemovePos(&l, --cursor);
+            if (cursor != 0 || l.len != 0) {    
+                RemovePos(&l, --cursor);
+            }
         }
         if (ret == 2) {
             if (strcmp(op, "add") == 0) {
@@ -95,10 +97,10 @@ int main() {
                 cursor++;
             } else if (strcmp(op, "move") == 0) {
                 if (let == 'l')
-                    if (l.len - cursor != l.len) 
+                    if (l.len - cursor < l.len) 
                         cursor--;
                 else if (let == 'r')
-                    if (l.len + cursor != l.len)
+                    if (l.len + cursor > 0)
                         cursor++;
             }
         }

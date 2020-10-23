@@ -8,6 +8,7 @@ typedef int Data;
 typedef struct _Node {
     Data item;
     struct _Node *next;
+    struct _Node *prev;
 } Node;
 
 typedef struct {
@@ -16,8 +17,16 @@ typedef struct {
 } Link;
 
 void InitLink(Link *l) {
-    l->head = (Node *)malloc(sizeof(Node));
-    l->head->next = NULL;
+    Node *d1, *d2;
+    d1 = (Node *)malloc(sizeof(Node));
+    d2 = (Node *)malloc(sizeof(Node));
+
+    d1->prev = d2;
+    d1->next = d2;
+    d2->prev = d1;
+    d2->next = NULL;
+
+    l->head = d1;
     l->len = 0;
 }
 
@@ -31,29 +40,49 @@ bool InsertPos(Link *l, int pos, int item) {
         return false;
     newNode = (Node *)malloc(sizeof(Node));
     newNode->item = item;
+    newNode->prev = NULL;
     newNode->next = NULL;
 
-    current = l->head;
-    for(int i=0; i<pos; i++) {
-        current = current->next;
+    if (pos < l->len/2) {
+        current = l->head;
+        for(int i=0; i<pos; i++) {
+            current = current->next;
+        }
+    } else {
+        current = l->head->prev;
+        for (int i=l->len; i>=pos; i--) {
+            current = current->prev;
+        }
     }
+    
+    newNode->prev = current;
     newNode->next = current->next;
+    current->next->prev = newNode;
     current->next = newNode;
     l->len++;
     return true;
 }
 
 bool RemovePos(Link *l, int pos) {
-    Node *current, *temp;
     if (IsEmpty(l) || pos < 0 || pos >= l->len) 
         return false;
-
-    current = l->head;
-    for (int i=0; i<pos; i++) {
-        current = current->next;
+    
+    Node *current, *temp;
+    if (pos < l->len/2) {
+        current = l->head;
+        for(int i=0; i<pos; i++) {
+            current = current->next;
+        }
+    } else {
+        current = l->head->prev;
+        for (int i=l->len; i>=pos; i--) {
+            current = current->prev;
+        }
     }
     temp = current->next; 
-    current->next = current->next->next;
+    temp->next->prev = current;
+    current->next = temp->next;
+
     l->len--;
     free(temp);
     return true;
@@ -61,14 +90,16 @@ bool RemovePos(Link *l, int pos) {
 
 void PrintAll(Link *l) {
     for(Node *i=l->head->next; i != NULL; i=i->next) {
+        if (i->next == NULL) return;
         printf("%c", i->item);
     }
 }
 
 void ClearList(Link *l) {
-    while (l->head->next != NULL) {
+    while (l->head->next->next != NULL) {
         RemovePos(l, l->len-1);
     }
+    free(l->head->prev);
     free(l->head);
 }
 
@@ -85,7 +116,10 @@ int main() {
         fgets(line, 8, stdin);
         int ret = sscanf(line, "%s %c\n", op, &let);
         if (strcmp(op, "erase") == 0) {
-            RemovePos(&l, --cursor);
+            if (cursor != 0 || l.len == 0) {
+                RemovePos(&l, --cursor);
+                cursor++;
+            }
         }
         if (ret == 2) {
             if (strcmp(op, "add") == 0) {
@@ -95,10 +129,10 @@ int main() {
                 cursor++;
             } else if (strcmp(op, "move") == 0) {
                 if (let == 'l')
-                    if (l.len - cursor != l.len) 
+                    if (l.len - cursor < l.len) 
                         cursor--;
                 else if (let == 'r')
-                    if (l.len + cursor != l.len)
+                    if (l.len - cursor > 0)
                         cursor++;
             }
         }

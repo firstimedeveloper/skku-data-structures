@@ -80,13 +80,9 @@ bool RemovePos(Link *l, int pos) {
         }
     }
     temp = current->next; 
-<<<<<<< HEAD
-    current->next = temp->next;
-=======
     temp->next->prev = current;
     current->next = temp->next;
 
->>>>>>> bidirectional
     l->len--;
     free(temp);
     return true;
@@ -120,11 +116,7 @@ int main() {
         fgets(line, 8, stdin);
         int ret = sscanf(line, "%s %c\n", op, &let);
         if (strcmp(op, "erase") == 0) {
-<<<<<<< HEAD
-            if (cursor != 0 && l.len != 0) {    
-=======
             if (cursor != 0 && l.len != 0) {
->>>>>>> bidirectional
                 RemovePos(&l, --cursor);
             }
         }

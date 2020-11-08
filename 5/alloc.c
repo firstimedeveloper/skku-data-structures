@@ -63,7 +63,7 @@ int alloc(Mem *m, int size) {
     for (int i=0; i<=m->count; i++) {
         if (current->next != NULL) {
             avail = current->next->pos - (current->pos + current->size);
-            printf("\navail space %d\n", avail);
+            // printf("\navail space %d\n", avail);
             if (avail < minAvailSpace && avail >= size) {
                 minAvailSpace = avail;
                 newNode->pos = (current->pos + current->size);
@@ -156,8 +156,8 @@ int main() {
             sscanf(query, "%s %d %d\n", op, &pos, &size);
             freemem(&m, pos, size); // always succeeds
         }
-        PrintAll(&m);
-        printf("\n");
+        // PrintAll(&m);
+        // printf("\n");
     }
     ClearAll(&m);
 }

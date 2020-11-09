@@ -1,59 +1,65 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+
+int up = '^'; int down = 'V';
+
+typedef enum {false, true} bool;
+typedef int Data;
+
+typedef struct _btNode {
+    Data item;
+    struct _btNode* lc;
+    struct _btNode* rc;
+} btNode;
 
 
-#define MAX 10000000
 
-// idea:
-// No. fold (n) |  string
-// 1             ^
-// 2           V ^ ^
-// 3         VV^ ^ V^^
-// 4     ^^VV^VV ^ VV^^V^^
-// ...
-// The middle ^ doesn't change, but you can see
-// that n == the right side of n+1
-// and that fliped(n) == left side of n+1
-// The above would be the answers for when the first digit of the input
-// is 1 (the second picture) but the same applies for when the digit == 0.
-// The above can be implemented iteratively or recursively.
+btNode* CreateNode(Data item) {
+    btNode *node = (btNode *)malloc(sizeof(btNode));
+    node->item = item;
+    node->lc = NULL;
+    node->rc = NULL;
+    return node;
+}
+btNode* CreateLeftSubtree(btNode *node) {
+    btNode *child = CreateNode(up);
+    node->lc = child;
+    return child;
+}
 
-char* flip(char *str) {
-    // i starts at (index==strlen-1) since 
-    // we have to flip the strip horizonatally and vertically
-    char newStr[MAX];
-    int idx=0;
-    for (int i=strlen(str)-1; i>0; i--) {
-        if (str[i] == 'V')
-            //printf("^");
-            newStr[idx] = '^';
-        else 
-            //printf("V");
-            newStr[idx] = 'V';
-        idx++;
+btNode* CreateRightSubtree(btNode *node) {
+    btNode *child = CreateNode(down);
+    node->rc = child;
+    return child;
+}
+// LCR
+void InOrder(btNode *root) {
+    if (root != NULL) {
+        InOrder(root->lc);            
+        printf("%c", root->item);
+        InOrder(root->rc);
     }
-    return newStr;
 }
 
-void fold(char *str, int num, int orient) {
-    if (num ==)
+void fold(btNode *root, int num) {
+    if (num == 0) return;
+    fold(CreateLeftSubtree(root), num-1);
+    fold(CreateRightSubtree(root), num-1);
 }
+
 
 int main() {
-    // The names up and down are chosen as 
-    // they look like arrows pointing up or down.
-    char down = 'V'; // starting char for when orientation == 0
-    char up = '^'; // starting char for when orientation == 1
-    
-    int orientation, folds; // first, second digits of input
+    int orientation, folds, dir;
     scanf("%d %d", &orientation, &folds);
-
-    printf("%c", up);
-
-    char str[MAX] = '^';
-    char temp[MAX] = '^';
-    for (int i=0; i<folds; i++) { 
-        temp = flip(temp);
-    }
     
+    if (orientation == 0) {
+        int temp = up;
+        up = down;
+        down = temp;
+    }
+
+    btNode *root = CreateNode(up);
+    fold(root, folds-1);
+
+    InOrder(root);
 }

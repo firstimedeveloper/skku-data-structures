@@ -22,6 +22,11 @@ btNode* CreateNode(btData item) {
 }
 
 void DestroyNode(btNode *node) {
+    if (node != NULL) {
+        DestroyNode(node->lc);
+        DestroyNode(node->rc);
+        
+    }
     free(node);
 } 
 
@@ -38,22 +43,6 @@ bool CreateRightSubTree(btNode *root, btNode *node) {
     root->rc = node;
     return true;
 }
-// LCR
-void InOrder(btNode *root) {
-    if (root != NULL) {
-        InOrder(root->lc);
-        printf("%d ", root->item);
-        InOrder(root->rc);
-    }
-}
-//CLR
-void PreOrder(btNode *root) {
-    if (root != NULL) {
-        printf("%d ", root->item);
-        PreOrder(root->lc);
-        PreOrder(root->rc);
-    }
-}
 //LRC
 void PostOrder(btNode *root) {
     if (root != NULL) {
@@ -63,6 +52,7 @@ void PostOrder(btNode *root) {
     }
 }
 
+// The items that go in to the stack are pointers to btNode
 typedef btNode* Data;
 
 typedef struct {
@@ -129,7 +119,10 @@ int main() {
     InitStack(&stack);
     Push(&stack, root);
 
+    // i == 1 as the root node is already in the stack
+    // i is the index for the preorderedArr
     int i=1;
+    // j is the index for the inorderedArr
     int j=0;
     while (i < maxNodes) {
         btNode *peek = Peek(&stack);
@@ -160,8 +153,8 @@ int main() {
         Push(&stack, newNode);
         i++;
     }
-
+    // print created binary tree in postorder form
     PostOrder(root);
-    
-    // DestroyNode(root);
+    // recursively free all the nodes starting with the root node
+    DestroyNode(root);
 }

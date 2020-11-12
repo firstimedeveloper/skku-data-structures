@@ -12,7 +12,13 @@ typedef struct _btNode {
     struct _btNode* rc;
 } btNode;
 
-
+void DestroyNode(btNode *node) {
+    if (node != NULL) {
+        DestroyNode(node->lc);
+        DestroyNode(node->rc);   
+    }
+    free(node);
+} 
 
 btNode* CreateNode(Data item) {
     btNode *node = (btNode *)malloc(sizeof(btNode));
@@ -32,18 +38,11 @@ btNode* CreateRightSubtree(btNode *node) {
     node->rc = child;
     return child;
 }
-// LCR
-void InOrder(btNode *root) {
-    if (root != NULL) {
-        InOrder(root->lc);            
-        printf("%c", root->item);
-        InOrder(root->rc);
-    }
-}
 
 void fold(btNode *root, int num) {
     if (num == 0) return;
     fold(CreateLeftSubtree(root), num-1);
+    printf("%c", root->item);
     fold(CreateRightSubtree(root), num-1);
 }
 
@@ -59,7 +58,6 @@ int main() {
     }
 
     btNode *root = CreateNode(up);
-    fold(root, folds-1);
-
-    InOrder(root);
+    fold(root, folds);
+    DestroyNode(root);
 }

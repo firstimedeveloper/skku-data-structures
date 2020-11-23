@@ -18,7 +18,6 @@ Data Peek(Queue *q);
 bool EnQueue(Queue *q, int item);
 bool DeQueue(Queue *q);
 
-
 typedef struct _gNode {
     int color;
     int id;
@@ -32,7 +31,6 @@ typedef struct {
 
 int calculateNumCountries(Graph *g);
 
-void PrintGraph(Graph *g);
 void CreateGraph(Graph *g, int num, int *regions);
 void DestroyGraph(Graph *g);
 void AddEdge(Graph *g, int src, int dest);
@@ -57,12 +55,9 @@ int main() {
         AddEdge(&g, a, b);
     }
 
-    // for (int i=0; i<numRegion; i++) {
-    //     printf("%d: %d\n", i, g.heads[i]->color);
-    // }
+
     int num = calculateNumCountries(&g);
     printf("%d\n", num);
-    //PrintGraph(&g);
     DestroyGraph(&g);
 }
 
@@ -101,18 +96,6 @@ int calculateNumCountries(Graph *g) {
     return total;
 }
 
-void PrintGraph(Graph *g) {
-    for (int i=0; i<g->num; i++) {
-        gNode *current = g->heads[i];
-        printf("%d: ", i);
-        while(current->next != NULL) {
-            current = current->next;
-            printf("%d ", current->id);
-        }
-        printf("\n");
-    }
-}
-
 void CreateGraph(Graph *g, int num, int *regions) {
     g->num = num;
     g->heads = (gNode **)malloc(sizeof(gNode*) * num);
@@ -143,11 +126,11 @@ void AddEdge(Graph *g, int src, int dest) {
     currentSrc = g->heads[src];
     currentDest = g->heads[dest];
     if (currentSrc->color != currentDest->color) {
-        // printf("%d->%d: c: %d %d\n", src, dest, currentSrc->color, currentDest->color);
         return;
     }
 
     while (currentSrc->next != NULL) {
+        // check for duplicates
         if (currentSrc->next->id == dest) return;
         currentSrc = currentSrc->next;
     }
@@ -166,7 +149,6 @@ void AddEdge(Graph *g, int src, int dest) {
     newNode2->next = NULL;
     currentDest->next = newNode2;
 }
-
 
 void InitQueue(Queue *q) {
     q->front = 0;

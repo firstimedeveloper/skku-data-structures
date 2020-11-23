@@ -1,7 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define MAX 10000
 
 typedef enum {false, true} bool;
+typedef int Data;
+
+typedef struct {
+    Data items[MAX];
+    int front;
+    int rear;
+} Queue;
+
+void InitQueue(Queue *q);
+bool IsFull(Queue *q);
+bool IsEmpty(Queue *q);
+Data Peek(Queue *q);
+bool EnQueue(Queue *q, int item);
+bool DeQueue(Queue *q);
+
 
 typedef struct _gNode {
     int color;
@@ -55,19 +71,32 @@ int calculateNumCountries(Graph *g) {
     for (int i=0; i<g->num; i++) {
         visited[i] = false;
     }
-    
+    Queue q;
+    InitQueue(&q);
     int total = 0;
     for (int i=0; i<g->num; i++) {
-        gNode *current = g->heads[i];
-        int count = 1;
-        if (visited[i]) continue;
-        else visited[i] = true;
-        while (current->next != NULL) {
-            current = current->next;
-            if (visited[current->id]) count = 0;
-            else visited[current->id] = true;  
+        EnQueue(&q, i);
+        bool count = false;
+        while (!IsEmpty(&q)) {
+            gNode* cur;
+            int vtx = Peek(&q);
+            DeQueue(&q);
+            // Skip if the vertex has been visited.
+            if (visited[vtx]) continue;
+            else {
+                visited[vtx] = true;
+                count = true;
+            }
+            // Enqueue the vertex if it has been unvisited.
+            cur = g->heads[vtx]->next;
+            while (cur != NULL) {
+                if (!visited[cur->id])
+                    EnQueue(&q, cur->id);
+                cur = cur->next;
+            }
         }
-        total += count;
+        if (count) total++;
+
     }
     return total;
 }
@@ -138,3 +167,28 @@ void AddEdge(Graph *g, int src, int dest) {
     currentDest->next = newNode2;
 }
 
+
+void InitQueue(Queue *q) {
+    q->front = 0;
+    q->rear = 0;
+}
+bool IsFull(Queue *q) {
+    return q->front == (q->rear + 1) % MAX;
+}
+bool IsEmpty(Queue *q) {
+    return q->rear == q->front;
+}
+Data Peek(Queue *q) {
+    return q->items[q->front];
+}
+bool EnQueue(Queue *q, int item) {
+    if (IsFull(q)) return false;
+    q->items[q->rear] = item;
+    q->rear = (q->rear + 1) % MAX;
+    return true;
+}
+bool DeQueue(Queue *q) {
+    if (IsEmpty(q)) return false;
+    q->front = (q->front + 1) % MAX;
+    return true;
+}

@@ -93,6 +93,7 @@ int calculateNumCountries(Graph *g) {
         if (count) total++;
 
     }
+    free(visited);
     return total;
 }
 

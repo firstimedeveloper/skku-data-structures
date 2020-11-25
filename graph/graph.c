@@ -168,5 +168,6 @@ void DFS(Graph *g) {
             current = current->next;
         }
     }
+    free(visited);
 }
 void BFS(Graph * g);
